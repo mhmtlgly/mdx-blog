@@ -1,0 +1,35 @@
+---
+title: Download image with click in Gatsby
+slug: download-image-with-click-in-html
+image: "./gatsby-astronaut.png"
+tags: [Gatsby, React, HTML]
+---
+
+## Download image with click in Gatsby
+
+```js
+import * as React from "react"
+import { Layout, Pagination } from "../components"
+import { Link } from "gatsby"
+import awsLogo from "../images/aws-icon.svg"
+
+const IndexPage = () => {
+  return (
+    <Layout>
+      <h2>HOME</h2>
+      <div>
+        <a href={awsLogo} download>
+          <button type="button">Download AWS Logo </button>
+        </a>
+        <a href={awsLogo} download>
+          Download AWS Logo
+        </a>
+      </div>
+      <Link to="/blog">blog</Link>
+      <Link to="/tags">tags</Link>
+    </Layout>
+  )
+}
+
+export default IndexPage
+```

@@ -1,0 +1,173 @@
+---
+title: Multiple queries in one GraphQL call
+slug: multiple-queries-in-one-graphql-call
+image: "./gatsby-astronaut.png"
+tags: [Gatsby, GraphQL]
+---
+
+```js
+exports.createPages = async ({
+  actions: { createPage },
+  graphql,
+  reporter,
+}) => {
+  const result = await graphql(`
+    query mainquery {
+      allBlogposts: allContentfulBlogPost {
+        nodes {
+          slug
+        }
+      }
+      singleBlogpost: allContentfulBlogPost {
+        nodes {
+          slug
+          title
+          category {
+            title
+            blog_post {
+              title
+            }
+          }
+        }
+      }
+      allCategories: allContentfulCategory {
+        nodes {
+          slug
+        }
+      }
+      singleCategory: allContentfulCategory {
+        nodes {
+          slug
+        }
+      }
+      allContentfulFaq {
+        nodes {
+          title
+        }
+      }
+      allContentfulPricing {
+        nodes {
+          title
+        }
+      }
+      servicesPage: allContentfulPricing {
+        nodes {
+          title
+        }
+      }
+      aboutPage: allContentfulPricing {
+        nodes {
+          title
+        }
+      }
+    }
+  `)
+
+  if (result.errors) {
+    reporter.panic("Error loading lessons", JSON.stringify(result.errors))
+  }
+
+  // ALL Blogposts
+  result.data.allBlogposts.nodes.forEach(node => {
+    const posts = result.data.allBlogposts.nodes
+    const postsPerPage = 3
+    const numberOfPages = Math.ceil(posts.length / postsPerPage)
+    Array.from({ length: numberOfPages }).forEach((_, i) => {
+      createPage({
+        path: i === 0 ? `/blog` : `/blog/${i + 1}`,
+        component: require.resolve("./src/templates/all-blogposts.js"),
+        context: {
+          slug: node.slug,
+          limit: postsPerPage,
+          skip: i * postsPerPage,
+          numberOfPages,
+          currentPage: i + 1,
+        },
+      })
+    })
+  })
+
+  // Single Blogpost
+  result.data.singleBlogpost.nodes.forEach(node =>
+    createPage({
+      path: `/blog/${node.slug}`,
+      component: require.resolve("./src/templates/single-blogpost.js"),
+      context: {
+        slug: node.slug,
+        title: node.title,
+        categories: node.categories,
+      },
+    })
+  )
+
+  // ALL Categories
+  result.data.allCategories.nodes.forEach(node => {
+    createPage({
+      path: `/categories`,
+      component: require.resolve("./src/templates/all-categories.js"),
+      context: {
+        slug: node.slug,
+      },
+    })
+  })
+
+  // Single Category
+  result.data.singleCategory.nodes.forEach(node => {
+    createPage({
+      path: `/category/${node.slug}`,
+      component: require.resolve("./src/templates/single-category.js"),
+      context: {
+        slug: node.slug,
+      },
+    })
+  })
+
+  // FAQ Page
+  result.data.allContentfulFaq.nodes.forEach(node => {
+    createPage({
+      path: `/faq`,
+      component: require.resolve("./src/templates/faq.js"),
+      context: {
+        title: node.title,
+      },
+    })
+  })
+
+  // Pricing Page
+  result.data.allContentfulPricing.nodes.forEach(node => {
+    createPage({
+      path: `/pricing`,
+      component: require.resolve("./src/templates/pricing.js"),
+      context: {
+        title: node.title,
+      },
+    })
+  })
+
+  // Services Page
+  result.data.servicesPage.nodes.forEach(node => {
+    createPage({
+      path: `/services`,
+      component: require.resolve("./src/templates/services.js"),
+      context: {
+        title: node.title,
+      },
+    })
+  })
+
+  // About Page
+  result.data.aboutPage.nodes.forEach(node => {
+    createPage({
+      path: `/about`,
+      component: require.resolve("./src/templates/about.js"),
+      context: {
+        title: node.title,
+      },
+    })
+  })
+}
+
+// exports.onCreateDevServer = ({ app }) => {
+//     app.get("/contact", (req, res) => res.json({ success: true }));
+//   };
+```

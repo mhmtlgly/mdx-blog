@@ -1,0 +1,29 @@
+---
+title: Gatsby with Google Fonts
+slug: gatsby-with-google-fonts
+image: "./gatsby-astronaut.png"
+tags: [Gatsby]
+---
+
+## Install Google Font Dependency
+
+```shell
+https://www.npmjs.com/package/gatsby-plugin-google-fonts-v2
+```
+
+## Choose Fonts and update gatsby-config.js
+
+```js
+{
+    resolve: `gatsby-plugin-google-fonts-v2`,
+    options: {
+        fonts: [
+            {
+                family: "MuseoModerno",
+                variable: true,
+                weights: ["200..900"],
+            },
+        ],
+    },
+},
+```

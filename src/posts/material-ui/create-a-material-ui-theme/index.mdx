@@ -1,0 +1,99 @@
+---
+title: Create a Material UI Theme
+slug: create-a-material-ui-theme
+image: "./gatsby-astronaut.png"
+tags: [React, Material UI]
+---
+
+## Creating the Material UI Theme Object
+
+```js
+import { createMuiTheme } from "@material-ui/core/styles"
+import { purple } from "@material-ui/core/colors"
+
+const gatsbyLila = "#6c2e9c"
+const gatsbyOrange = "#ffaf1d"
+const textColor = "#212121"
+
+export const theme = createMuiTheme({
+  overrides: {
+    MuiCssBaseline: {
+      "@global": {
+        "*": {
+          // margin: 0,
+          // padding: 0,
+          // fontSize: 18,
+        },
+        html: { minHeight: "100%" },
+        "body, #___gatsby, #gatsby-focus-wrapper": { minHeight: "100vh" },
+        body: {
+          // fontFamily: "MuseoModerno",
+          fontFamily: "system-ui",
+        },
+        "#gatsby-focus-wrapper": {
+          display: "grid",
+          gridTemplateRows: "1fr",
+        },
+        h1: {
+          lineHeight: 2,
+          color: gatsbyLila,
+        },
+        h2: {
+          // lineHeight: 2,
+          color: "#000",
+        },
+        a: {
+          color: "black",
+          textDecoration: "none",
+          display: "flex",
+        },
+        p: {
+          color: "black",
+        },
+        ul: { padding: 0 },
+        li: { listStyle: "none" },
+        pre: {
+          backgroundColor: "aliceblue",
+          overflow: "auto",
+          // width: 'fit-content',
+        },
+      },
+    },
+  },
+  palette: {
+    primary: { main: purple.A700 },
+    // secondary: { main: "#ffc400" },
+  },
+  spacing: 10,
+})
+```
+
+## Wrapping the Gatsby Root Element with the Material UI ThemeProvider
+
+```js
+import React from "react"
+import { Provider } from "react-redux"
+import { ThemeProvider } from "@material-ui/core/styles"
+import { CssBaseline } from "@material-ui/core"
+import { loadStripe } from "@stripe/stripe-js"
+import { Elements } from "@stripe/react-stripe-js"
+
+import { store } from "./src/state/store"
+import { theme } from "./src/theme"
+import { RootElement } from "./src/rootElement"
+
+const stripePromise = loadStripe(process.env.STRIPE_PUBLISHABLE_KEY)
+
+export const wrapRootElement = ({ element }) => {
+  return (
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Elements stripe={stripePromise}>
+          <RootElement>{element}</RootElement>
+        </Elements>
+      </ThemeProvider>
+    </Provider>
+  )
+}
+```

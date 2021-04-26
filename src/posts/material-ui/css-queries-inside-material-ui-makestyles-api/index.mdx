@@ -1,0 +1,20 @@
+---
+title: CSS queries inside Material UI makestyles API
+slug: css-queries-inside-material-ui-makestyles-api
+image: "./gatsby-astronaut.png"
+tags: [React, Gatsby, CSS, Material UI]
+---
+
+```js
+const useStyles = makeStyles(theme => ({
+  "@supports (display: grid)": {
+    grid: {
+      display: "grid",
+      gridTemplateColumns: props =>
+        `repeat(auto-fit, minmax(${props.gridwidth}px, 1fr))`,
+      gridTemplateRows: "repeat(auto-fit, minmax(300px, 1fr))",
+      gridGap: theme.spacing(2),
+    },
+  },
+}))
+```

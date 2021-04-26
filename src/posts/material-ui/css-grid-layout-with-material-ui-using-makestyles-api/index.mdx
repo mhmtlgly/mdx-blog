@@ -1,0 +1,62 @@
+---
+title: CSS Grid (gridTemplateAreas) layout with Material UI using makestyles API
+slug: css-grid-layout-with-material-ui-using-makestyles-api
+image: "./gatsby-astronaut.png"
+tags: [React, Gatsby, CSS, Material UI]
+---
+
+```js
+import React from "react"
+import { graphql, Link } from "gatsby"
+import {
+  CardContent,
+  Card,
+  Button,
+  Grid,
+  Container,
+  CssBaseline,
+  Box,
+} from "@material-ui/core"
+import { makeStyles } from "@material-ui/core/styles"
+
+const useStyles = makeStyles(theme => ({
+  gridContainer: {
+    display: "-ms-grid",
+    display: "grid",
+    gridTemplateAreas: `
+                            "header header"
+                            "sidebar main"
+                            "footer footer"
+        `,
+    msGridColumns: "2fr 1fr",
+    gridTemplateColumns: "repeat(2,1fr)",
+  },
+  header: {
+    gridArea: "header",
+  },
+  main: {
+    gridArea: "main",
+  },
+  aside: {
+    gridArea: "sidebar",
+  },
+  footer: {
+    gridArea: "footer",
+  },
+}))
+
+export const GridLayout = props => {
+  const classes = useStyles()
+
+  return (
+    <React.Fragment>
+      <div className={classes.gridContainer}>
+        <header className={classes.header}>HEADER</header>
+        <main className={classes.main}>MAIN</main>
+        <aside className={classes.aside}>SIDEBAR</aside>
+        <footer className={classes.footer}>FOOOTER</footer>
+      </div>
+    </React.Fragment>
+  )
+}
+```

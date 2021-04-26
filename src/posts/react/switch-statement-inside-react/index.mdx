@@ -1,0 +1,44 @@
+---
+title: Switch statement inside React
+slug: switch-statement-inside-react
+image: "./gatsby-astronaut.png"
+tags: [React, Javascript]
+---
+
+```js
+<React.Fragment>
+  {data.allContentfulCategory.nodes.map(node => {
+    const logos = node.title
+    return (
+      <React.Fragment key={node.id}>
+        {(() => {
+          switch (logos) {
+            case "GraphQL":
+              return <Imgbox img={graphqlIcon} height={100} width={100} />
+            case "CSS":
+              return <Imgbox img={cssIcon} height={100} width={100} />
+            case "HTML":
+              return <Imgbox img={htmlIcon} height={100} width={100} />
+            case "Material UI":
+              return <Imgbox img={muiIcon} height={100} width={100} />
+            case "React":
+              return <Imgbox img={reactIcon} height={100} width={100} />
+            case "Git":
+              return <Imgbox img={gitIcon} height={100} width={100} />
+            case "Javascript":
+              return <Imgbox img={jsIcon} height={100} width={100} />
+            case "Node.js":
+              return <Imgbox img={nodeIcon} height={100} width={100} />
+            case "Gatsby":
+              return <Imgbox img={gatsbyIcon} height={100} width={100} />
+            case "styled-components":
+              return <Imgbox img={styledIcon} height={100} width={100} />
+            default:
+              return null
+          }
+        })()}
+      </React.Fragment>
+    )
+  })}
+</React.Fragment>
+```

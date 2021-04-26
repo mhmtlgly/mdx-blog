@@ -1,0 +1,106 @@
+.gatsby-highlight {
+  position: relative;
+  -webkit-overflow-scrolling: touch;
+}
+.gatsby-highlight pre[class*="language-"] {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* .gatsby-highlight pre[class*="language-"]::before {
+  background: black;
+  border-radius: 0 0 0.25rem 0.25rem;
+  color: white;
+  font-size: 12px;
+  letter-spacing: 0.025rem;
+  padding: 3px 10px;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  text-transform: uppercase;
+  top: 0;
+  min-width: 50px;
+} */
+
+.code-copy-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  /* right: 70px; */
+  border: none;
+  padding: 3px 10px;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.025rem;
+  font-weight: 600;
+  outline: none;
+  background-color: #daa520;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* .gatsby-highlight pre[class~="language-js"]::before {
+  content: "js";
+  background: #f7df1e;
+  color: #000;
+  color: black;
+}
+
+.gatsby-highlight pre[class~="language-jsx"]::before {
+  content: "jsx";
+  background: #7f87ff;
+  color: black;
+}
+
+.gatsby-highlight pre[class~="language-shell"]::before {
+  content: "shell";
+  background: #ff7f7f;
+  color: black;
+}
+
+.gatsby-highlight pre[class~="language-css"]::before {
+  content: "css";
+  background: #1e2cf7;
+  color: black;
+}
+
+.gatsby-highlight pre[class~="language-html"]::before {
+  content: "html";
+  background: #e44d26;
+  color: black;
+} */
+
+.prism-code {
+  /* padding: 20px; */
+  padding: 35px 10px 10px;
+  overflow: auto;
+  width: 100%;
+}
+
+/*- ICONS instead of words */
+
+/* .gatsby-highlight pre[class~="language-js"]::before {
+  content: "";
+  background: url(../images/javascript-icon.svg);
+  background-size: contain;
+  background-repeat: no-repeat;
+  height: 100%;
+  width: 20px;
+}
+
+.gatsby-highlight pre[class~="language-css"]::before {
+  content: "";
+  background: url(../images/css-icon.svg);
+  background-size: contain;
+  background-repeat: no-repeat;
+  height: 100%;
+  width: 20px;
+}
+
+.gatsby-highlight pre[class~="language-html"]::before {
+  content: "";
+  background: url(../images/html-icon.svg);
+  background-size: contain;
+  background-repeat: no-repeat;
+  height: 100%;
+  width: 20px;
+} */

@@ -1,0 +1,17 @@
+---
+title: Protected (client only) routes in Gatsby
+slug: protected-client-only-routes-in-gatsby
+image: "./gatsby-astronaut.png"
+tags: [React, Gatsby]
+---
+
+## Define routes in gatsby-node.js
+
+```js
+exports.onCreatePage = async ({ page, actions: { createPage } }) => {
+  if (page.path.match(/^\/account/)) {
+    page.matchPath = "/account/*"
+    createPage(page)
+  }
+}
+```

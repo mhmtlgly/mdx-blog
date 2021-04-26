@@ -1,0 +1,58 @@
+---
+title: Darkmode in React with Material UI
+slug: darkmode-in-react-with-material-ui
+image: "./gatsby-astronaut.png"
+tags: [React, Gatsby, Material UI]
+---
+
+```js
+import React from "react"
+import {
+  Typography,
+  ThemeProvider,
+  createMuiTheme,
+  Button,
+  CssBaseline,
+  Switch,
+  Checkbox,
+} from "@material-ui/core"
+import { WbSunny } from "@material-ui/icons"
+import Brightness2Icon from "@material-ui/icons/Brightness2"
+export default function App() {
+  const [darkMode, setDarkMode] = React.useState(true)
+  const theme = createMuiTheme({
+    palette: {
+      type: darkMode ? "dark" : "light",
+    },
+  })
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Typography variant="h6">hello CodeSandbox</Typography>
+      <Typography variant="h6">
+        Start editing to see some magic happen!!!
+      </Typography>
+      {/* <Button
+        variant="contained"
+        color="secondary"
+        onClick={() => setDarkMode((prev) => !prev)}
+      >
+        click...
+      </Button>
+      <Switch
+        checked={darkMode}
+        onChange={() => setDarkMode((prev) => !prev)}
+        color="secondary"
+      /> */}
+      <Checkbox
+        checked={darkMode}
+        onChange={() => setDarkMode(prev => !prev)}
+        color="secondary"
+        icon={<WbSunny style={{ color: "gold" }} />}
+        checkedIcon={<Brightness2Icon style={{ color: "lightblue" }} />}
+        size="small"
+      />
+    </ThemeProvider>
+  )
+}
+```

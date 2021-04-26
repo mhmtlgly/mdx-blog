@@ -1,0 +1,72 @@
+---
+title: Reusable GraphQL snippets in Gatsby using the useStaticQuery hook
+slug: reusable-graphql-snippets-in-gatsby-using-the-useStaticQuery-hook
+image: "./gatsby-astronaut.png"
+tags: [React, Gatsby]
+---
+
+## Create query in graphql-queries folder
+
+```js
+import { useStaticQuery, graphql } from "gatsby"
+
+export const useProductQuery = () => {
+  const data = useStaticQuery(graphql`
+    query singleproductsQueryyyy {
+      allContentfulProduct {
+        nodes {
+          productName {
+            productName
+          }
+          slug
+          sku
+          quantity
+          price
+          image {
+            fluid {
+              src
+            }
+          }
+          mainProductImage {
+            fluid {
+              src
+            }
+          }
+        }
+      }
+    }
+  `)
+
+  return data.allContentfulProduct.nodes
+}
+```
+
+## import and use it in a component
+
+```js
+import * as React from "react"
+import { useProductQuery } from "../graphql"
+
+const Component = props => {
+  const products = useProductQuery()
+
+  return (
+    <React.Fragment>
+      {products.map(product => {
+        return (
+          <div key={product.productName.productName}>
+            <h2>{product.productName.productName}</h2>
+            <img
+              src={product.mainProductImage.fluid.src}
+              alt="product-image"
+              height="auto"
+              width="100%"
+            />
+          </div>
+        )
+      })}
+    </React.Fragment>
+  )
+}
+export default Component
+```

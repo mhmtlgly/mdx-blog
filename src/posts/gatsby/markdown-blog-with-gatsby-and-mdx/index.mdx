@@ -1,0 +1,246 @@
+---
+title: Markdown Blog with Gatsby and MDX
+slug: markdown-blog-with-gatsby-and-mdx
+image: "./gatsby-astronaut.png"
+tags: [React, Gatsby, Javascript, GraphQL]
+---
+
+## Final Project Structure
+
+## Create new Gatsby Project
+
+```shell
+npx gatsby new projectname
+```
+
+## Install Dependencies
+
+```shell
+yarn add gatsby-source-filesystem gatsby-plugin-mdx @mdx-js/mdx @mdx-js/react mdx-utils prism-react-renderer
+```
+
+## Update gatsby-config.js
+
+```js
+_// File: gatsby.config.js_
+
+{
+  resolve: `gatsby-source-filesystem`,
+  options: {
+    name: `images`,
+    path: `${__dirname}/src/images`,
+  },
+},
+{
+  resolve: `gatsby-source-filesystem`,
+  options: {
+    name: `posts`,
+    path: `${__dirname}/src/posts`,
+  },
+},
+{
+  resolve: `gatsby-plugin-mdx`,
+  options: {
+    extensions: [`.mdx`, `.md`],
+    gatsbyRemarkPlugins: [],
+  },
+},
+```
+
+## Create Templates for all posts
+
+```js
+import * as React from "react"
+import { useStaticQuery, graphql } from "gatsby"
+import { MDXRenderer } from "gatsby-plugin-mdx"
+
+export const allPostsQuery = graphql`
+  query allPostsQuery($skip: Int!, $limit: Int!) {
+    allMdx(skip: $skip, limit: $limit) {
+      nodes {
+        body
+        frontmatter {
+          title
+          slug
+        }
+      }
+    }
+  }
+`
+
+const AllPosts = ({ data, pageContext }) => {
+  const posts = data.allMdx.nodes.map(node => node)
+  const { currentPage, numberOfPages } = pageContext
+
+  return (
+    <React.Fragment>
+      {posts.map(post => {
+        const { title, slug } = post.frontmatter
+        return (
+          <React.Fragment key={title}>
+            <p>{title}</p>
+            <p>{slug}</p>
+            <MDXRenderer>{post.body}</MDXRenderer>
+          </React.Fragment>
+        )
+      })}
+    </React.Fragment>
+  )
+}
+
+export default AllPosts
+```
+
+## Create Templates for single posts
+
+```js
+// Create a new folder named templates inside the src folder.
+import * as React from "react"
+import { graphql, Link } from "gatsby"
+import { MDXRenderer } from "gatsby-plugin-mdx"
+
+export const singlePostQuery = graphql`
+  query singlePostQuery($id: String!) {
+    mdx(id: { eq: $id }) {
+      body
+      tableOfContents
+      frontmatter {
+        title
+        slug
+        categories
+      }
+    }
+  }
+`
+
+const SinglePost = ({ data, pageContext }) => {
+  return (
+    <React.Fragment>
+      <h1>{data.mdx.frontmatter.title}</h1>
+      <div
+        style={{
+          display: "flex",
+          padding: 20,
+          background: "#fae",
+          maxWidth: 800,
+        }}
+      >
+        {data.mdx.frontmatter.categories.map(category => {
+          return <p>{category}</p>
+        })}
+      </div>
+      <div
+        style={{
+          padding: 20,
+          background: "#ffa",
+          maxWidth: 800,
+        }}
+      >
+        <h3>Table of Contents</h3>
+        {data.mdx.tableOfContents.items.map((heading, i) => {
+          return (
+            <div key={heading.url}>
+              <Link to={`#${heading.title.replace(/ /g, "-").toLowerCase()}`}>
+                {`${i + 1}. ${heading.title}`}
+              </Link>
+            </div>
+          )
+        })}
+      </div>
+      <MDXRenderer>{data.mdx.body}</MDXRenderer>
+    </React.Fragment>
+  )
+}
+
+export default SinglePost
+```
+
+## Create Pages programmatically via Gatsby Node API
+
+```js
+exports.createPages = async ({
+  actions: { createPage },
+  graphql,
+  reporter,
+}) => {
+  const result = await graphql(`
+    query mainquery {
+      allMdx {
+        nodes {
+          id
+          frontmatter {
+            slug
+            categories
+          }
+        }
+      }
+    }
+  `)
+
+  if (result.errors) {
+    reporter.panic("failed to create posts", result.errors)
+  }
+
+  // CREATE ALL POSTS PAGE
+
+  const postsPerPage = 3
+  const numberOfPages = Math.ceil(
+    result.data.allMdx.nodes.length / postsPerPage
+  )
+
+  Array.from({ length: numberOfPages }).forEach((_, i) => {
+    createPage({
+      path: i === 0 ? `/blog_all` : `/blog_all/page/${i + 1}`,
+      component: require.resolve("./src/templates/allPosts.js"),
+      context: {
+        limit: postsPerPage,
+        skip: i * postsPerPage,
+        numberOfPages,
+        currentPage: i + 1,
+      },
+    })
+  })
+
+  // CREATE SINGLE POSTS
+
+  result.data.allMdx.nodes.forEach(node => {
+    const id = node.id
+    const slug = node.frontmatter.slug
+
+    createPage({
+      path: `/blog_single/${slug}`,
+      component: require.resolve("./src/templates/singlePost.js"),
+      context: {
+        id,
+        slug,
+      },
+    })
+  })
+}
+```
+
+## Update gatsby-browser.js file and wrap the root element with MDXProvider
+
+```js
+import * as React from "react"
+import { MDXProvider } from "@mdx-js/react"
+import { preToCodeBlock } from "mdx-utils"
+import { Code } from "./src/components/code"
+import { HeadingTwo } from "./src/components/code/headingTwo"
+
+const components = {
+  h2: HeadingTwo,
+  pre: preProps => {
+    const props = preToCodeBlock(preProps)
+    if (props) {
+      return <Code {...props} />
+    }
+    return <pre {...preProps} />
+  },
+  wrapper: ({ children }) => <>{children}</>,
+}
+
+export const wrapRootElement = ({ element }) => {
+  return <MDXProvider components={components}>{element}</MDXProvider>
+}
+```

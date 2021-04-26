@@ -1,0 +1,299 @@
+---
+title: List of Git commands
+slug: list-of-git-commands
+image: "./gatsby-astronaut.png"
+tags: [Git]
+---
+
+## Create a new Repository on the command line
+
+```shell
+git init
+git add .
+git commit -m "first commit"
+git remote add origin https://github.com/mhmtlgly/nameoftherepository.git
+git push -u origin master
+
+////
+
+git remote -v
+
+git push
+git push --force
+git push origin master
+git push -u origin master // --set-upstream => always push to master
+
+fatal: remote origin already exists
+git remote set-url origin https://github.com/mhmtlgly/testing
+```
+
+## Clone a specific branch
+
+```shell
+git clone -b <branchname> --single-branch <remote-repo-url>
+git clone -b <branchname> <remote-repo-url>
+```
+
+## Make a commit
+
+```shell
+git commit -am // shortcut for git add & git commit => works ONLY for modified files
+git commit -a
+git commit -m 'message' -m 'description'
+git commit --amend -m "an updated commit message"
+--no-edit flag // without changing its commit message
+
+git commit -m 'Initial commit'
+git add forgotten_file
+git commit –amend --reset_author
+```
+
+## Make a pull request
+
+```shell
+git pull / <= if –set-upstream || else line below
+git pull origin master // clone remote master to local master/branch
+```
+
+## Undo File deletition
+
+```shell
+git restore .
+```
+
+## Create File in Git
+
+```shell
+git mate fileName
+```
+
+## Undo Commits
+
+```shell
+git log
+git checkout COMMIT_ID
+git revert COMMIT_ID || SHIFT + COLON .then wq
+git reset COMMIT_ID --hard || deltes all prior commits + deletes changes –hard flag
+```
+
+## Rename files
+
+```shell
+git mv OLDfilename NEWfileName
+```
+
+## Staging
+
+```shell
+git add . // commit all files to staging area
+git add -u => better git add -A || if rename file to update staging area
+git add fileName
+git reset // unstage
+git reset fileName
+git reset commitID // unstage any changes to files
+git reset –hard commitID // unstage + remove changes
+```
+
+## Show Commits History
+
+```shell
+git log
+git log –oneline
+git show
+```
+
+## Fork a repo from
+
+```shell
+git config –global user.name 'Mehmet Ali Gülay'
+git config –global user.email 'mhmtlgly@gmail.com'
+```
+
+## CHECK CODE HISTORY based on commits
+
+```shell
+git checkout commitID ==> git checkout master // go back in time –just watching
+
+git status || git status -s || git status -short
+git add filename
+git add .
+git commit -m "example edited footer"
+git push
+git clone https://github.com/schacon/simplegit-progit
+changed but not yet staged git diff
+staged that will go into your next commit git diff --staged
+automatically stage every file that is already tracked before doing the commit git commit -a -m 'Add new benchmarks'
+commits files added with git add command & also commits files changed since then git commit -a
+remove a file from Git git rm filename
+modified the file / had already added it to the staging area git rm -f filename
+git mv OLDfilename NEWfilename rename a file in Git
+commit history git log
+abbreviated stats for each commit history git log -stat
+difference in each commit git log -p -2
+```
+
+## Branches
+
+```shell
+list all branches git branch || git branch -a
+create new branch git branch new-branch
+delete branch git branch -d branch-name || git branch -D branch-name
+switch to branch git checkout branch-name
+create and switch to branch git checkout -b branch-name
+```
+
+## rename Branch
+
+```shell
+git branch -m oldBranchName newBranchName
+git branch -m newBranchName
+```
+
+## Delete Remote Branch
+
+```shell
+git push -d origin remoteBranchName
+git push origin :remoteBranchName
+git fetch –prune // delete non existing remote branches
+```
+
+## Branches2
+
+```shell
+git branch -q (to get out of the list) // overview of branches
+git checkout -b nameOfBranch // create & switch to branch
+git checkout nameOfBranch // switch to branch (enter TAB to autocomplete)
+git bra
+```
+
+nch -d nameOfBranch // delete branch
+
+## REMOVE FILES
+
+```shell
+git clean -n // show untracked files to be removed
+git clean -f // remove untracked file
+```
+
+## Stash
+
+```shell
+git stash
+git stash -u // includes untracked files
+git stash apply
+git stash list // display list of all stashes
+
+git stash apply stashNumber // apply stash with stash_number
+
+git stash push -m „stash_title_to_identify_it_easier“
+git stash push -u -m „stash_title_to_identify_it_easier“ //include untracked files
+
+git stash drop stashNumber // delete stash
+git stash pop stashNumber // apply stash and delete stash afterwards
+git stash clear // clears stash list => delete all
+```
+
+## Rebase
+
+```shell
+git rebase --i numberOfCommit
+```
+
+## Branches3
+
+```shell
+// delete branch locally
+git branch -d localBranchName
+
+// delete branch remotely
+git push origin --delete remoteBranchName
+
+update local branch with remote master and save changes made to branch
+git stash changes
+git rebase master
+git stash apply
+git add .
+git commit
+git rebase
+```
+
+## clean
+
+```shell
+git clean -n //which files will be removed => list
+git clean -f
+git clean -f -d
+```
+
+## REFLOG
+
+```shell
+git reflog
+git reset theReflogID –hard
+git reflog expire --expire=now --all // delete reflog history
+```
+
+## update local master with remote master
+
+```shell
+git fetch
+git status
+git pull
+```
+
+## Merge
+
+```shell
+git merge master
+
+(in master) => git merge nameOfBranch –no-ff
+–no-ff => retain all of the commit messages prior to the merge (including the merge message)
+
+Git merge nameOfBranch –squash // clean merge without additional commits
+
+Git push --force
+
+git diff nameOfBranch // show which changes were made to file
+```
+
+## Undo Commit & keep file changes & transfer to new branch
+
+```shell
+git log --oneline
+git reset HEAD^ or git reset HEAD~2 //remove commit BUT KEEP CHANGES
+git checkout -b branchName
+git status
+git add .
+git commit -m ''message'' -m ''description''
+git push -u origin branchName
+git reset –hard // undo all changes to files
+```
+
+## Update branch with Master from Remote
+
+```shell
+git fetch
+git status
+git pull origin master
+
+git checkout feature
+git merge master
+
+git merge feature master
+```
+
+## Tracking Remote Repo
+
+```shell
+git branch -u origin/master
+
+# It depends on what state your local repository is in relative to upstream.
+# If there are conflicts, then you are better off stashing your work before pulling your branch in. That can be accomplished thus:
+git add . && git stash save
+git pull
+git stash pop
+
+# rebasing. If you pull remote changes with the flag --rebase , then your local changes are reapplied on top of the remote changes.
+# git rebase master is the proper way to do this. Merging would mean a commit would be created for the merge, while rebasing would not.
+git pull origin master –rebase
+```

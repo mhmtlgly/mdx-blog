@@ -1,0 +1,163 @@
+---
+title: Pagination
+slug: pagination
+image: "./gatsby-astronaut.png"
+tags: [Gatsby, Javascript]
+---
+
+## Gatsby createPages API
+
+```js
+exports.createPages = async ({
+  actions: { createPage },
+  graphql,
+  reporter,
+}) => {
+  const result = await graphql(`
+    query mainquery {
+      allMdx {
+        nodes {
+          id
+          frontmatter {
+            slug
+          }
+        }
+      }
+    }
+  `)
+
+  if (result.errors) {
+    reporter.panic("failed to create posts", result.errors)
+  }
+
+  const postsPerPage = 3
+  const numberOfPages = Math.ceil(
+    result.data.allMdx.nodes.length / postsPerPage
+  )
+
+  Array.from({ length: numberOfPages }).forEach((_, i) => {
+    createPage({
+      path: i === 0 ? `/blog_all` : `/blog_all/page/${i + 1}`,
+      component: require.resolve("./src/templates/allPosts.js"),
+      context: {
+        limit: postsPerPage,
+        skip: i * postsPerPage,
+        numberOfPages,
+        currentPage: i + 1,
+      },
+    })
+  })
+}
+```
+
+## PageContext
+
+```js
+const AllPosts = ({ data, pageContext }) => {
+  console.log(data)
+  const posts = data.allMdx.nodes.map(node => node.frontmatter)
+  const { currentPage, numberOfPages } = pageContext
+  const isFirst = currentPage === 1
+  const isLast = currentPage === numberOfPages
+  const prevPageTest =
+    currentPage === 1 || currentPage - 1 === 1
+      ? "/blog"
+      : `/blog/page/${currentPage - 1}`
+  const prevPage =
+    currentPage - 1 === 1 ? "/blog" : `/blog/page/${currentPage - 1}`
+  const nextPage = `/blog/page/${currentPage + 1}`
+
+  return (
+    <Layout>
+      <ContainerWrapper>
+        <FeatureImage />
+        <Content>
+          <H1 textAlign="center" margin="0 0 1rem 0 ">
+            Lorem ipsum dolor sit amet.
+          </H1>
+          <P textAlign="center" color="dark2">
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eveniet
+            harum officia repellendus nobis saepe atque ipsum eaque aperiam.
+            Laudantium, nisi?
+          </P>
+          {posts.map(post => {
+            console.log(post)
+            const { title, slug, date, excerpt } = post
+            return (
+              <ContentCard
+                key={date}
+                slug={`/blog/${slug}`}
+                date={date}
+                title={title}
+                excerpt={excerpt}
+              />
+            )
+          })}
+        </Content>
+        <Pagination
+          isFirst={isFirst}
+          isLast={isLast}
+          prevPage={prevPage}
+          nextPage={nextPage}
+        />
+      </ContainerWrapper>
+    </Layout>
+  )
+}
+```
+
+## Pagination Component with styled-components
+
+```js
+import React from "react"
+import styled from "styled-components"
+import { Link } from "gatsby"
+
+const PaginationWrapper = styled.div`
+  grid-column: 2 / span 12;
+  grid-row: 8;
+  padding: 3rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  a:nth-child(1) {
+    color: ${props =>
+      props.isFirst ? props.theme.colors.dark3 : props.theme.colors.dark1};
+    pointer-events: ${props => (props.isFirst ? "none" : "auto")};
+    cursor: ${props => (props.isFirst ? "default" : "pointer")};
+  }
+  a:nth-child(2) {
+    color: ${props =>
+      props.isLast ? props.theme.colors.dark3 : props.theme.colors.dark1};
+    pointer-events: ${props => (props.isLast ? "none" : "auto")};
+    cursor: ${props => (props.isLast ? "default" : "pointer")};
+
+    @media ${props => props.theme.breakpoints.tablet} {
+      grid-column: 2 / span 6;
+    }
+  }
+`
+
+const PaginationElement = styled(props => <Link {...props} />)`
+  font-size: 0.875rem;
+  line-height: 1.125rem;
+  font-weight: 400;
+  text-decoration: none;
+  margin: 0 2rem;
+
+  &:hover,
+  &:focus {
+    text-decoration: underline;
+  }
+`
+
+export const Pagination = ({ isFirst, isLast, prevPage, nextPage }) => {
+  return (
+    <PaginationWrapper isFirst={isFirst} isLast={isLast}>
+      <PaginationElement to={prevPage}>Previous Page</PaginationElement>
+      <PaginationElement to={nextPage}>Next Page</PaginationElement>
+    </PaginationWrapper>
+  )
+}
+```

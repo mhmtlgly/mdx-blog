@@ -1,0 +1,154 @@
+---
+title: Material UI with styled-components
+slug: material-ui-with-styled-components
+image: "./gatsby-astronaut.png"
+tags: [React, Gatsby, styled-components, Material UI]
+---
+
+```js
+import * as React from "react"
+import { Box } from "@material-ui/core"
+import styled from "styled-components"
+
+export const ImageContainer = styled(({ props, ...other }) => (
+  <Box {...other} />
+))({
+  background: props => `url(${props.img}) center center / contain no-repeat`,
+})
+
+export const StyledButton = styled(({ props, ...other }) => (
+  <Button {...other} />
+))`
+  background-color: ${props => props.clr};
+  color: ${props => props.text};
+  &:hover {
+    background-color: ${props => props.hover};
+  }
+`
+
+const Icon = styled(({ props, ...other }) => <Box {...other} />)({
+  "& img": {
+    width: props => props.imgWidth,
+  },
+})
+
+const Imgbox2 = styled(({ props, ...other }) => <Box {...other} />)({
+  background: props => `url(${props.img}) center center / contain no-repeat`,
+})
+
+const SocialIcon = styled(({ props, ...other }) => <IconButton {...other} />)`
+  color: ${props => props.clr};
+  background: ${props => props.bg};
+`
+
+export const Imgbox = styled(({ props, ...other }) => <Box {...other} />)`
+  background: ${props => `url(${props.img}) center center / contain no-repeat`};
+`
+
+import React from "react"
+import styled from "styled-components"
+import { makeStyles } from "@material-ui/core/styles"
+import { Box } from "@material-ui/core"
+
+// type TProps = {
+//   display: string
+// }
+
+// const useStyles = makeStyles(theme => ({
+//   root: {
+//     // background: ({ bgImg, contain, cover }: TProps) =>
+//     //   `url(${bgImg}) center center / ${
+//     //     contain ? "contain" : cover ? "cover" : "auto"
+//     //   } no-repeat`,
+//     background: ({ bgImg, size }: TProps) =>
+//       `url(${bgImg}) center center / ${size} no-repeat`,
+//   },
+// }))
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    background: props =>
+      `url(${props.bgimg}) center center / ${props.size} no-repeat`,
+    color: props => props.clr,
+    height: props => props.bgheight,
+    background: props => props.bg,
+  },
+}))
+
+// const Imgbox = styled(({ props, ...other }) => <Box {...other} />)({
+//   background: props => `url(${props.img}) center center / contain no-repeat`,
+// })
+
+export const ImageContainer = props => {
+  const classes = useStyles(props)
+  return <Box className={classes.root} {...props}></Box>
+  //   return <Imgbox {...props}></Imgbox>
+}
+
+export const ImageContainerExample = props => {
+  const classes = useStyles(props)
+  return (
+    <ImageContainer
+      bg={`linear-gradient(
+    0deg,
+    rgba(221, 255, 0, 0.3),
+    rgba(196, 227, 255, 0.3)
+  ),
+  url(${gatsbyAstronaut}) center center / contain no-repeat`}
+    ></ImageContainer>
+  )
+}
+
+/* eslint-disable */
+
+import React, { Fragment } from "react"
+import styled from "styled-components"
+
+import { makeStyles } from "@material-ui/core/styles"
+import { Button } from "@material-ui/core"
+
+//- Change Styles based on Props.
+
+const useStyles = makeStyles(theme => ({
+  button: {
+    display: props => props.display,
+    display: ({ display }) => display,
+  },
+}))
+
+export const CustomButton = props => {
+  const classes = useStyles(props)
+  const { children, content } = props
+  return (
+    <Fragment>
+      <Button {...props}>{children ? children : "button"} </Button>
+      <Button className={classes.button} {...props}>
+        {content}
+      </Button>
+    </Fragment>
+  )
+}
+
+//- Default export (different syntax highlighting).
+
+const StyledButton = styled(({ props, ...other }) => <Button {...other} />)`
+  background-color: ${props => props.clr};
+  color: ${props => props.text};
+  &:hover {
+    background-color: ${props => props.hover};
+  }
+`
+export default StyledButton
+
+//- Named export (different syntax highlighting).
+
+export const StyledButton2 = styled(({ props, ...other }) => (
+  <Button {...other} />
+))`
+  background-color: ${props => props.clr};
+  color: ${props => props.text};
+  &:hover {
+    background-color: ${props => props.hover};
+  }
+`
+```

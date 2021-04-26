@@ -1,0 +1,20 @@
+---
+title: Environment variables in Gatsby
+slug: environment-variables-in-gatsby
+image: "./gatsby-astronaut.png"
+tags: [Gatsby]
+---
+
+## At the top of the gatsby-config.js file
+
+```js
+if (process.env.ENVIRONMENT !== "production") {
+  dotenv.config()
+}
+
+// or
+
+require("dotenv").config({
+  path: `.env.${process.env.NODE_ENV}`,
+})
+```

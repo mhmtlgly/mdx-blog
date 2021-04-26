@@ -1,0 +1,537 @@
+---
+title: Cookie Consent Component in Gatsby with Google Analytics
+slug: cookie-consent-component-in-gatsby-with-google-analytics
+image: "./gatsby-astronaut.png"
+tags: [Gatsby, Javascript, Google Analytics]
+---
+
+## Google Analytics Part
+
+```shell
+npx gatsby new projectname
+```
+
+## Gatsby Part
+
+```shell
+npx gatsby new projectname
+```
+
+## Install Google Tag Manager Dependency
+
+```shell
+yarn add gatsby-plugin-google-tagmanager
+```
+
+## Update gatsby-config.js
+
+```js
+    {
+      resolve: "gatsby-plugin-google-tagmanager",
+      options: {
+        id: "GTM-5HZ7ZXN",
+        includeInDevelopment: true,
+      },
+    },
+```
+
+## Cookie Component #1
+
+```js
+/* eslint-disable */
+
+import { Link } from "gatsby"
+import PropTypes from "prop-types"
+import React from "react"
+
+import { Dialog, DialogTitle, Box, Checkbox, Switch } from "@material-ui/core"
+import { FiSettings } from "react-icons/fi"
+
+const CookieConsentBar = ({ siteTitle }) => {
+  const [showModal, setShowModal] = React.useState(false)
+  const [checked, setChecked] = React.useState(false)
+  const [cookieValue, setCookieValue] = React.useState(null)
+  const [checkboxValue, setCheckboxValue] = React.useState(null)
+
+  React.useEffect(() => {
+    setCookieValue(
+      document.cookie.replace(
+        /(?:(?:^|.*;\s*)ga-opt-out\s*\=\s*([^;]*).*$)|^.*$/,
+        "$1"
+      )
+    )
+  })
+
+  React.useEffect(() => {
+    setCheckboxValue(
+      document.cookie.replace(
+        /(?:(?:^|.*;\s*)my-cookie-testing\s*\=\s*([^;]*).*$)|^.*$/,
+        "$1"
+      ) === "true"
+    )
+  })
+
+  return (
+    <div
+      style={{
+        height: "auto",
+        background: "lightgrey",
+        width: "100%",
+        // width: 100,
+        position: "fixed",
+        bottom: 0,
+        // top:0,
+        // lft:0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-around",
+        flexDirection: "column",
+      }}
+    >
+      <label>
+        Essential Cookies
+        <input defaultChecked={true} disabled type="checkbox" />
+      </label>
+      {/* <Switch
+        id="cookie-testing"
+        color="secondary"
+        checked={checkboxValue}
+        onChange={() => setCheckboxValue(!checkboxValue)}
+      /> */}
+      <label>
+        Google Analytics
+        <input
+          className="c1"
+          defaultChecked={checkboxValue}
+          type="checkbox"
+          name="test-input"
+          id="cookie-testing"
+        />
+      </label>
+
+      <a id="ga-opt-out" href="#">
+        {cookieValue === "false" ? "Google Analytics deaktivieren" : "AUS"}
+      </a>
+      <a id="ga-opt-in" href="#">
+        {cookieValue === "" || cookieValue === "true"
+          ? "Google Analytics aktivieren"
+          : "AKTIV"}
+      </a>
+      {/* <a id="cookie-testing" href="#">
+      TESTING
+      </a> */}
+
+      {/* <Checkbox
+        id="google-analytics-checkbox"
+        checked={checked}
+        onChange={e => setChecked(e.target.checked)}
+      /> */}
+      {/* <FiSettings onClick={() => setShowModal(true)} />
+      <button>opt-in</button>
+      <button id="ga-opt-out" href="#">
+        Google Analytics Opt-Out
+      </button>
+      <Dialog open={showModal} onClose={() => setShowModal(false)}>
+        <DialogTitle id="simple-dialog-title">
+          Cookie Settings
+        </DialogTitle>
+        <Box>
+          <Checkbox
+            id="googleanalyticscheckbox"
+            checked={checked}
+            onChange={e => setChecked(e.target.checked)}
+          />
+          <p>Google Analytics</p>
+        </Box>
+      </Dialog> */}
+    </div>
+  )
+}
+
+export default CookieConsentBar
+```
+
+## Cookie Component #2
+
+```js
+import React from "react"
+import "./styles.css"
+import { Box, Button, Paper, Dialog, DialogTitle } from "@material-ui/core"
+import { makeStyles } from "@material-ui/core/styles"
+import { FiSettings } from "react-icons/fi"
+import { Transition } from "react-transition-group"
+
+const useStyles = makeStyles(theme => ({
+  grid: {
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    maxWidth: 600,
+    padding: "0 10px 10px",
+    margin: "auto",
+    display: "grid",
+    grid: "auto auto auto auto auto / auto auto",
+    position: "fixed",
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  heading: {
+    gridColumn: "1 / 3",
+  },
+  paragraph: {
+    gridColumn: "1 / 3",
+  },
+  settings: {
+    gridColumn: "1 / 3",
+    margin: "10px 0",
+  },
+  notwendige: {
+    marginRight: 10,
+    [theme.breakpoints.down("xs")]: {
+      gridColumn: "1 / 3",
+      margin: "0",
+    },
+  },
+  acceptAllCookies: {
+    background: "green",
+    marginLeft: 10,
+    "&:hover": {
+      background: "green",
+    },
+    [theme.breakpoints.down("xs")]: {
+      gridColumn: "1 / 3",
+
+      margin: "10px 0 0",
+    },
+  },
+  link: {
+    padding: "20px 0 10px",
+  },
+  cookie_settings_paper: {
+    padding: 10,
+    textAlign: "right",
+  },
+  settings_save_button: {
+    background: "green",
+    margin: 10,
+    textAlign: "center",
+    "&:hover": {
+      background: "green",
+    },
+  },
+}))
+
+export default function NewCookieBar() {
+  const [isAnalytics, setIsAnalytics] = React.useState(null)
+  const [isFacebook, setIsFacebook] = React.useState(null)
+  const [isMarketing, setIsMarketing] = React.useState(null)
+  const [showCookieBar, setShowCookieBar] = React.useState(true)
+  const [modalOpen, setModalOpen] = React.useState(false)
+
+  const classes = useStyles()
+
+  const acceptAll = () => {
+    document.cookie =
+      "analytics-cookie=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/"
+    document.cookie =
+      "facebook-cookie=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/"
+    document.cookie =
+      "marketing-cookie=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/"
+    // setShowCookieBar(false);
+    window.location.reload()
+  }
+
+  const saveCookiePreferences = () => {
+    const analytics_checkbox = document.getElementById(
+      "analytics-cookie-checkbox"
+    )
+    const facebook_checkbox = document.getElementById(
+      "facebook-cookie-checkbox"
+    )
+    const marketing_checkbox = document.getElementById(
+      "marketing-cookie-checkbox"
+    )
+    if (analytics_checkbox.checked) {
+      document.cookie =
+        "analytics-cookie=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/"
+    } else {
+      if (
+        document.cookie.replace(
+          /(?:(?:^|.*;\s*)analytics-cookie\s*\=\s*([^;]*).*$)|^.*$/,
+          "$1"
+        )
+      ) {
+        document.cookie =
+          "analytics-cookie=false; expires=Thu, 31 Dec 1099 23:59:59 UTC; path=/"
+      }
+    }
+    if (facebook_checkbox.checked) {
+      document.cookie =
+        "facebook-cookie=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/"
+    } else {
+      if (
+        document.cookie.replace(
+          /(?:(?:^|.*;\s*)facebook-cookie\s*\=\s*([^;]*).*$)|^.*$/,
+          "$1"
+        )
+      ) {
+        document.cookie =
+          "facebook-cookie=false; expires=Thu, 31 Dec 1099 23:59:59 UTC; path=/"
+      }
+    }
+    if (marketing_checkbox.checked) {
+      document.cookie =
+        "marketing-cookie=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/"
+    } else {
+      if (
+        document.cookie.replace(
+          /(?:(?:^|.*;\s*)marketing-cookie\s*\=\s*([^;]*).*$)|^.*$/,
+          "$1"
+        )
+      ) {
+        document.cookie =
+          "marketing-cookie=false; expires=Thu, 31 Dec 1099 23:59:59 UTC; path=/"
+      }
+    }
+    // setShowCookieBar(false);
+    window.location.reload()
+  }
+
+  React.useEffect(() => {
+    setIsAnalytics(
+      document.cookie.replace(
+        /(?:(?:^|.*;\s*)analytics-cookie\s*\=\s*([^;]*).*$)|^.*$/,
+        "$1"
+      ) === "true"
+    )
+  })
+
+  React.useEffect(() => {
+    setIsFacebook(
+      document.cookie.replace(
+        /(?:(?:^|.*;\s*)facebook-cookie\s*\=\s*([^;]*).*$)|^.*$/,
+        "$1"
+      ) === "true"
+    )
+  })
+
+  React.useEffect(() => {
+    setIsMarketing(
+      document.cookie.replace(
+        /(?:(?:^|.*;\s*)marketing-cookie\s*\=\s*([^;]*).*$)|^.*$/,
+        "$1"
+      ) === "true"
+    )
+  })
+
+  return (
+    <React.Fragment>
+      {showCookieBar ? (
+        <React.Fragment>
+          <Paper className={classes.grid}>
+            <h1 className={classes.heading}>Cookie Consent</h1>
+            <p className={classes.paragraph}>
+              We use cookies on our website. Some of them are essential, while
+              others help us to improve this website and your experience.
+            </p>
+            <Button
+              onClick={() => setModalOpen(true)}
+              className={classes.settings}
+              // variant="outlined"
+              // color="primary"
+              endIcon={<FiSettings />}
+            >
+              Settings
+            </Button>
+            <Button
+              className={classes.notwendige}
+              variant="outlined"
+              color="primary"
+            >
+              Nur notwendige Cookies
+            </Button>
+            <Button
+              className={classes.acceptAllCookies}
+              color="primary"
+              variant="contained"
+              id="accept-all-cookies-button"
+              onClick={acceptAll}
+            >
+              Alle akzeptieren
+            </Button>
+            <a className={classes.link} href="/">
+              Datenschutz
+            </a>
+          </Paper>
+          <Dialog onClose={() => setModalOpen(false)} open={modalOpen}>
+            <DialogTitle>Cookie Settings</DialogTitle>
+            <Paper className={classes.cookie_settings_paper}>
+              <label>
+                Notwendig
+                <input
+                  className="c1"
+                  disabled
+                  checked
+                  type="checkbox"
+                  name=""
+                />
+              </label>
+              <label>
+                Analytics
+                <input
+                  defaultChecked={isAnalytics}
+                  className="c1"
+                  type="checkbox"
+                  name=""
+                  id="analytics-cookie-checkbox"
+                />
+              </label>
+              <label>
+                Facebook
+                <input
+                  defaultChecked={isFacebook}
+                  className="c1"
+                  type="checkbox"
+                  name=""
+                  id="facebook-cookie-checkbox"
+                />
+              </label>
+              <label>
+                Marketing
+                <input
+                  defaultChecked={isMarketing}
+                  className="c1"
+                  type="checkbox"
+                  name=""
+                  id="marketing-cookie-checkbox"
+                />
+              </label>
+              <Button
+                className={classes.settings_save_button}
+                color="primary"
+                variant="contained"
+                id="save-cookie-preferences-button"
+                onClick={saveCookiePreferences}
+              >
+                save
+              </Button>
+            </Paper>
+          </Dialog>
+        </React.Fragment>
+      ) : (
+        <h2>nothing to show</h2>
+      )}
+    </React.Fragment>
+  )
+}
+```
+
+```js
+/* eslint-disable */
+
+import React from "react"
+import { FiSettings } from "react-icons/fi"
+import { makeStyles } from "@material-ui/core/styles"
+import { Button, Paper, Box } from "@material-ui/core"
+import { green, lightGreen } from "@material-ui/core/colors"
+
+const useStyles = makeStyles({
+  paper: {
+    position: "relative",
+    height: 300,
+    width: 400,
+    "& button": {
+      background: green[600],
+      position: "absolute",
+      right: 10,
+      bottom: 10,
+      "&:hover": {
+        background: lightGreen[700],
+      },
+    },
+  },
+})
+
+const CookieBar = () => {
+  const classes = useStyles()
+  return (
+    <React.Fragment>
+      <div
+        style={{
+          background: "lightgrey",
+          // height: 300,
+          maxWidth: 600,
+          padding: 20,
+          display: "grid",
+        }}
+      >
+        <h2>Cookie Einstellungen</h2>
+        <p>
+          We use cookies on our website. Some of them are essential, while
+          others help us to improve this website and your experience.
+        </p>
+
+        <Box display="flex" flexDirection="column">
+          <button style={{ background: "lightgrey" }}>
+            Cookies auswählen{" "}
+            <FiSettings
+              id="cookie-settings"
+              cursor="pointer"
+              // size={20}
+              color="white"
+            />
+          </button>
+          <button style={{ background: "white" }}>
+            Nur notwendige Cookies
+          </button>
+        </Box>
+        <button
+          id="alle-cookies-auswählen"
+          style={{ background: green[600], color: "white" }}
+        >
+          Alle Cookies auswählen
+        </button>
+        <a href="#">Datenschutzbestimmungen</a>
+      </div>
+      {/* <div
+        style={{
+          background: "lightgrey",
+          height: 300,
+          maxWidth: 600,
+          padding: 20,
+        }}
+      >
+        <h2>Cookie Einstellungen</h2>
+        <p>
+          We use cookies on our website. Some of them are essential, while
+          others help us to improve this website and your experience.
+        </p>
+        <label>
+          Notwendig
+          <input disabled checked type="checkbox" name="" id="c1" />
+        </label>
+        <label>
+          Statistiken
+          <input type="checkbox" name="" id="c1" />
+        </label>
+        <label>
+          Marketing
+          <input type="checkbox" name="" id="c1" />
+        </label>
+        <button style={{ background: "white" }}>Nur notwendige</button>
+        <button style={{ background: green[600], color: "white" }}>
+          Alle Cookies auswählen
+        </button>
+        <a href="#">Datenschutzbestimmungen</a>
+      </div> */}
+      {/* <Paper className={classes.paper} id="cookie-modal">
+        <h2>Cookie Einstellungen</h2>
+        <Button id="cookie-modal-save-button" variant="contained">
+          save
+        </Button>
+      </Paper> */}
+    </React.Fragment>
+  )
+}
+
+export default CookieBar
+```

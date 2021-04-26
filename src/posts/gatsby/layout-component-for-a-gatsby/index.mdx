@@ -1,0 +1,27 @@
+---
+title: Layout Component for a Gatsby site
+slug: layout-component-for-a-gatsby-site
+image: "./gatsby-astronaut.png"
+tags: [CSS, Material UI, React, Gatsby]
+---
+
+## Create a Layout Component with Material UI
+
+```js
+import * as React from "react"
+import { Box } from "@material-ui/core"
+
+import { Footer, Header } from "../"
+
+export const Layout = ({ children, ...props }) => {
+  return (
+    <Box display="flex" flexDirection="column" minHeight="100vh" {...props}>
+      <Header />
+      <Box component="main" flexGrow={1} mt={8} {...props}>
+        {children}
+      </Box>
+      <Footer />
+    </Box>
+  )
+}
+```

@@ -1,0 +1,97 @@
+---
+title: Setup testing in Gatsby with Jest and Testing Library
+slug: setup-testing-in-gatsby-with-jest-and-testing-library
+image: "./gatsby-astronaut.png"
+tags: [Gatsby, Jest, Testing Library]
+---
+
+import { FolderView } from "../../../components"
+
+## Folder Structure
+
+<FolderView />
+
+## Install Dependencies
+
+```shell
+yarn add -D @testing-library/jest-dom @testing-library/react babel-jest identity-obj-proxy jest @types/jest
+```
+
+## Create file-mock.js file inside tests/mocks folder
+
+```js
+module.exports = "test-file-stub"
+```
+
+## Create gatsby.js file inside tests/mocks folder
+
+```js
+const React = require("react")
+const gatsby = jest.requireActual("gatsby")
+module.exports = {
+  ...gatsby,
+  graphql: jest.fn(),
+  Link: jest.fn().mockImplementation(
+    // these props are invalid for an `a` tag
+    ({
+      activeClassName,
+      activeStyle,
+      getProps,
+      innerRef,
+      partiallyActive,
+      ref,
+      replace,
+      to,
+      ...rest
+    }) =>
+      React.createElement("a", {
+        ...rest,
+        href: to,
+      })
+  ),
+  StaticQuery: jest.fn(),
+  useStaticQuery: jest.fn(),
+}
+```
+
+## Create jest-preprocess.js file inside tests folder
+
+```js
+const babelOptions = {
+  presets: ["babel-preset-gatsby", "@babel/preset-typescript"],
+}
+
+module.exports = require("babel-jest").createTransformer(babelOptions)
+```
+
+## Create setup-test-env.js file inside tests folder
+
+```js
+import "@testing-library/jest-dom/extend-expect"
+```
+
+## Create jest.setup.js file
+
+```js
+require(`@testing-library/jest-dom/extend-expect`)
+```
+
+## Create jest.config.jss file
+
+```js
+module.exports = {
+transform: {
+"^.+\\.[jt]sx?$": `<rootDir>/tests/jest-preprocess.js`,
+  },
+  moduleNameMapper: {
+    ".+\\.(css|styl|less|sass|scss)$": `identity-obj-proxy`,
+".+\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": `<rootDir>/tests/__mocks__/file-mock.js`,
+},
+testPathIgnorePatterns: [`node_modules`, `\\.cache`, `<rootDir>.*/public`],
+transformIgnorePatterns: [`node_modules/(?!(gatsby)/)`],
+globals: {
+**PATH_PREFIX**: ``,
+},
+setupFilesAfterEnv: ["<rootDir>/tests/setup-test-env.js"],
+}
+```

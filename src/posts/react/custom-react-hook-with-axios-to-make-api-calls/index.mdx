@@ -1,0 +1,121 @@
+---
+title: Custom React Hook with Axios to make API calls
+slug: custom-react-hook-with-axios-to-make-api-calls
+image: "./gatsby-astronaut.png"
+tags: [React, Axios]
+---
+
+## Create the custom axios hook
+
+```js
+import { useState } from "react"
+import axios, { Method, AxiosRequestConfig } from "axios"
+
+export const useAxios = (
+  url: AxiosRequestConfig["url"],
+  method?: Method,
+  data?: AxiosRequestConfig["data"]
+) => {
+  const [response, setResponse] = useState(null)
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [status, setStatus] = useState(null)
+  const callAPI = async () => {
+    try {
+      setLoading(true)
+      const res = await axios({
+        method: method ? method : "GET",
+        url,
+        data,
+      })
+      console.log(res)
+      setResponse(res.data)
+      setError(null)
+      setLoading(false)
+      setStatus(res.status)
+    } catch (error) {
+      console.log(error)
+      console.log(error.name)
+      console.log(error.message)
+      setResponse(null)
+      setError(error)
+      setLoading(false)
+      // replace all strings => GET STATUS CODE (Number ONLY)
+      setStatus(parseInt(error.message.replace(/\D/g, "")))
+    }
+  }
+
+  return { callAPI, response, error, loading, status }
+}
+```
+
+## Import and use the custom hook inside a component
+
+```js
+import { useAxios } from "../hooks/"
+
+export const Component = props => {
+  const url = "https://jsonplaceholder.typicode.com/posts"
+  const { callAPI, response } = useAxios(url)
+
+  useEffect(() => {
+    setTimeout(() => callAPI(), 5000)
+  }, [])
+
+  return (
+    <Layout>
+      <SEO title="Our daily Blog. Find Blogposts that matter." />
+      <Typography variant="h5" component="h2">
+        Blog Posts fetched with axios from {url}
+      </Typography>
+      <Box
+        display="grid"
+        gridTemplateColumns="repeat(auto-fit, 300px)"
+        justifyContent="center"
+        gridGap={15}
+      >
+        {response ? (
+          response.slice(0, 5).map(post => {
+            const { id, title, body } = post
+            return (
+              <Box
+                component={Paper}
+                key={id}
+                my={3}
+                p={3}
+                display="grid"
+                gridTemplateRows="1fr 1fr"
+                maxWidth={300}
+              >
+                <Typography variant="button" component="h2">
+                  {title}
+                </Typography>
+                <Typography variant="body2" component="p">
+                  {body}
+                </Typography>
+                <Box
+                  component={Button}
+                  variant="contained"
+                  color="secondary"
+                  mt={3}
+                  {...props}
+                >
+                  read more
+                </Box>
+              </Box>
+            )
+          })
+        ) : (
+          <Box
+            component={CircularProgress}
+            m="30px auto"
+            display="block !important"
+            color="secondary"
+            {...props}
+          ></Box>
+        )}
+      </Box>
+    </Layout>
+  )
+}
+```

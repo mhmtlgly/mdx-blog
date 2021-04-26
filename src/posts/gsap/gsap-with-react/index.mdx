@@ -1,0 +1,33 @@
+---
+title: GSAP with React
+slug: gsap-with-react
+image: "./gatsby-astronaut.png"
+tags: [React, GSAP]
+---
+
+## Install GSAP
+
+```shell
+yarn add gsap
+```
+
+## Import GSAP in to React Component
+
+```js
+import { gsap } from "gsap"
+import { CSSRulePlugin } from "gsap/CSSRulePlugin"
+import { Draggable } from "gsap/Draggable"
+import { MotionPathPlugin } from "gsap/MotionPathPlugin"
+import { TextPlugin } from "gsap/TextPlugin"
+import { ScrollToPlugin } from "gsap/ScrollToPlugin"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+
+gsap.registerPlugin(
+  CSSRulePlugin,
+  Draggable,
+  MotionPathPlugin,
+  TextPlugin,
+  ScrollToPlugin,
+  ScrollTrigger
+)
+```

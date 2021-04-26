@@ -1,0 +1,135 @@
+---
+title: Blog with Gatsby and Contentful
+slug: blog-with-gatsby-and-contentful
+image: "./gatsby-astronaut.png"
+tags: [Gatsby, Javascript, Contentful, GraphQL]
+---
+
+## Install Dependencies
+
+```shell
+yarn add contentful gatsby-source-contentful
+```
+
+## Create .env file
+
+```js
+CONTENTFUL_ACCESS_TOKEN = youraccesstoken
+```
+
+## Update gatsby-config.js
+
+```js
+    {
+      resolve: `gatsby-source-contentful`,
+      options: {
+        spaceId: `yourspaceid`,
+        accessToken: process.env.CONTENTFUL_ACCESS_TOKEN,
+      },
+    },
+```
+
+## Render Markdown in Contentful
+
+```js
+<div
+  dangerouslySetInnerHTML={{
+    __html: `${data.contentfulBlogPost.content.childMarkdownRemark.html}`,
+  }}
+/>
+```
+
+## Filter Post and show other Posts below
+
+```js
+<Card>
+  {filteredArray.length === 0 &&
+    props.data.allContentfulCategory.nodes.map((category, index) => {
+      return (
+        <React.Fragment key={category.id}>
+          {category.slug !== categories && <p>{category.title}</p>}
+        </React.Fragment>
+      )
+    })}
+
+  {/* <Link to={`/category/${singleCategory.slug}`}><h2>{singleCategory.title}</h2></Link> */}
+
+  {filteredArray.map(post => {
+    return (
+      <React.Fragment key={post.id}>
+        <Imgbox
+          onClick={() => navigate(`/blog/${post.slug}`)}
+          className={classes.relatedArticles}
+          position="relative"
+          bgimg={post.image.fluid.src}
+        >
+          <li>
+            <Link to={`/blog/${post.slug}`}>{post.title}</Link>
+          </li>
+          <p>{post.createdAt}</p>
+          <Button
+            onClick={() => navigate(`/blog/${post.slug}`)}
+            variant="contained"
+            color="primary"
+          >
+            read more
+          </Button>
+          {/* <h2>{post.slug}</h2> */}
+          {/* <img src={post.image.fluid.src} alt="" height="100px" width="100px" /> */}
+        </Imgbox>
+      </React.Fragment>
+    )
+  })}
+</Card>
+```
+
+## Pagination
+
+```js
+// Inside gatsby-node.js
+
+result.data.allBlogposts.nodes.forEach(node => {
+  const posts = result.data.allBlogposts.nodes
+  const postsPerPage = 3
+  const numberOfPages = Math.ceil(posts.length / postsPerPage)
+  Array.from({ length: numberOfPages }).forEach((_, i) => {
+    createPage({
+      path: i === 0 ? `/blog` : `/blog/${i + 1}`,
+      component: require.resolve("./src/templates/all-blogposts.js"),
+      context: {
+        slug: node.slug,
+        limit: postsPerPage,
+        skip: i * postsPerPage,
+        numberOfPages,
+        currentPage: i + 1,
+      },
+    })
+  })
+})
+
+// Inside the Blog Component
+
+const { numberOfPages, currentPage } = props.pageContext
+const isFirstPage = currentPage === 1
+const isLastPage = currentPage === numberOfPages
+const nextPage = `/blog/${currentPage + 1}`
+const previousPage =
+  currentPage - 1 === 1 ? "/blog" : `/blog/${currentPage - 1}`
+
+// Next and Previous Button
+
+{
+  !isFirstPage && (
+    <Link to={previousPage} rel="prev">
+      Previous Page
+    </Link>
+  )
+}
+{
+  !isLastPage && (
+    <Link to={nextPage} rel="next">
+      Next Page
+    </Link>
+  )
+}
+```

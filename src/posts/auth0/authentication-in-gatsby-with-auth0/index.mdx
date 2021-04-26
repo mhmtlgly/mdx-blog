@@ -1,0 +1,121 @@
+---
+title: Authentication in Gatsby with Auth0
+slug: authentication-in-gatsby-with-auth0
+image: "./gatsby-astronaut.png"
+tags: [Gatsby, Auth0]
+---
+
+## Install dependencies
+
+```shell
+@auth0/auth0-react
+```
+
+## Define new environment variables inside .env file.
+
+```js
+AUTH0_DOMAIN = auth0domain
+AUTH0_CLIENTID = auth0clientid123456
+```
+
+## Wrap the Application with Auth0Provider
+
+```js
+import React from "react"
+import { Auth0Provider } from "@auth0/auth0-react"
+import { navigate } from "gatsby"
+import { Provider } from "react-redux"
+
+import { ThemeProvider } from "@material-ui/core/styles"
+import { CssBaseline } from "@material-ui/core"
+
+import { loadStripe } from "@stripe/stripe-js"
+import { Elements } from "@stripe/react-stripe-js"
+
+import { store } from "./src/state/store"
+import { theme } from "./src/theme"
+
+const onRedirectCallback = appState => {
+  // Use Gatsby's navigate method to replace the url
+  navigate(appState?.returnTo || "/", { replace: true })
+}
+
+const stripePromise = loadStripe(process.env.STRIPE_PUBLISHABLE_KEY)
+
+export const wrapRootElement = ({ element }) => {
+  return (
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Elements stripe={stripePromise}>
+          <Auth0Provider
+            domain={process.env.AUTH0_DOMAIN}
+            clientId={process.env.AUTH0_CLIENTID}
+            redirectUri={window.location.origin}
+            onRedirectCallback={onRedirectCallback}
+          >
+            {element}
+          </Auth0Provider>
+        </Elements>
+      </ThemeProvider>
+    </Provider>
+  )
+}
+```
+
+## Create Dashboard Page
+
+```js
+import React, { Fragment, useEffect, useState, useRef } from "react"
+import { graphql, useStaticQuery, Link, navigate } from "gatsby"
+import {
+  Auth0Provider,
+  useAuth0,
+  withAuthenticationRequired,
+} from "@auth0/auth0-react"
+import { makeStyles } from "@material-ui/core/styles"
+import { Box } from "@material-ui/core"
+
+import { Layout } from "../components"
+import { Button } from "@material-ui/core"
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    display: "grid",
+  },
+}))
+
+const Dashboard = () => {
+  const {
+    loginWithRedirect,
+    logout,
+    user,
+    isAuthenticated,
+    isLoading,
+  } = useAuth0()
+  const classes = useStyles()
+
+  useEffect(() => {
+    user && console.log(user)
+  })
+  return (
+    <Layout>
+      <ul>
+        <li>Name: {user.nickname}</li>
+        <li>E-mail: {user.email}</li>
+      </ul>
+      {isAuthenticated && (
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => logout({ returnTo: "http://localhost:8002" })}
+        >
+          logout
+        </Button>
+      )}
+    </Layout>
+  )
+}
+
+export default withAuthenticationRequired(Dashboard)
+```
